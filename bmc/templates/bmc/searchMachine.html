@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Maschine</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bmc/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+<div class="searchContainer">
+
+    <!-- left container -->
+    <div class="container_left">
+        <h3 class="container_left_title">
+            t-test search machine
+        </h3>
+        <div class="container_left_main">
+            {% csrf_token %}
+            <div class="container_left_main_intro">
+                Suche nach Artikeln, die den Kriterien auf der Webseite entsprechen
+            </div>
+            <div class="container_left_main_choose">
+                Wählen Sie eine Zeitungswebsite
+            </div>
+            <select class="container_left_main_select" aria-label="Default select example" name="choice" id="selectButton1" title="Please select...">
+                <option selected disabled>Please select...</option>
+                <option value="1" id="1">One</option>
+                <option value="2" id="2">Two</option>
+                <option value="3" id="3">Three</option>
+            </select>
+            <div class="container_left_main_choose">
+                Wählen Sie eine Kategorie
+            </div>
+            <select class="container_left_main_select" aria-label="Default select example" id="selectButton2" disabled></select>
+            <div class="container_left_main_choose">
+                Wählen Sie den Zeitraum der Veröffentlichung
+            </div>
+            <div class="container_left_main_select">
+                <input type="range" class="form-range" id="customRange1">
+            </div>
+            <div class="container_left_main_choose">
+                Bitte geben Sie ihre Suchkriterien ein
+            </div>
+            <div class="container_left_main_select">
+                <input type="text" class="form-control" placeholder="Suchkriterien" aria-label="Suchkriterien" aria-describedby="basic-addon1" id="keriterien">
+            </div>
+            <button class="btn btn-primary" style="margin-top: 30px" type="submit" id="search">Search</button>
+        </div>
+    </div>
+
+<script language="JavaScript">
+    $(document).ready(function (){
+        $("#selectButton1").on("change", function (){
+            let selectedValue = $('select#selectButton1 option:selected').text();
+            document.getElementById("selectButton2").options.length = 0;
+
+            $.get("afterselect/",{'value': selectedValue}, function (select){
+                let selection = eval('('+select+')')
+                console.log(selection)
+                let listFleet = "";
+                for(let key in selection){
+                        listFleet += "<option value='" + selection[key] + "'>" + selection[key] + "</option>";
+                }
+                $("#selectButton2").append(listFleet);
+                document.getElementById("selectButton2").removeAttribute("disabled")
+            })
+        })
+    })
+</script>
+
+    <!-- right container -->
+    <div class="container_right">
+        <h3 class="container_right_title" id="title">
+            ... Ergebnis(se) für ... in ...
+        </h3>
+        <div class="container_right_sort" style="margin-bottom: 5%;">
+             <div style="margin-right: 3%; font-weight: lighter">
+                Sortieren nach:
+            </div>
+            <select class="container_left_main_select" style="width: 10%; margin-right: 5%; height: 100%" aria-label="Default select example">
+                <option selected value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+            </select>
+        </div>
+
+        <!-- for中引用字典是无效的，仅能够引用字典中的二级字典和内容 -->
+        <div class="container_right_main" id="right"></div>
+    </div>
+</div>
+<script language="JavaScript">
+    $(document).ready(function (){
+        $("#search").on("click", function (){
+            let selectedWeb = $('select#selectButton1 option:selected').text();
+            let selectedKat = $('select#selectButton2 option:selected').text();
+            let kriterien = document.getElementById('keriterien').value;
+
+            $.get("result/",{'selectedWeb': selectedWeb, 'selectedKat': selectedKat, 'kriterien': kriterien}, function (result){
+                let result1 = eval('('+result+')')
+                console.log(result)
+                document.getElementById("title").innerText = result1['resultnumber']+" Ergebnis(se) für "+result1['kriterien']+" in "+result1['selectedKat']
+                let zeige = ""
+                for (let key in result1['results']) {
+                    let main_text = document.createElement('div');
+                    main_text.className = "container_right_main_text";
+                    let main_title = document.createElement('div');
+                    main_title.className = "container_right_main_title";
+                    main_title.innerHTML = "Overexpression of Lin28A in neural progenitor cells in vivo does not lead to brain tumor formation but results in reduced spine density";
+                    let main_writer = document.createElement('div');
+                    main_writer.className = "container_right_main_writer";
+                    main_writer.innerHTML = "Maximilian Middelkamp, Lisa Ruch, Christoph Krisp, Piotr Sumistawaski, Behnam Mohammadi, Matthias Dottermusch, Valerie Meister, Lusas Kuester, Hartmut Schueter, Sabine Windhorst and Julia E. Neumann ";
+                    let main_publish = document.createElement('div');
+                    main_publish.className = "container_right_main_publish";
+                    main_publish.innerHTML = "Published on: 20 November 2021"
+                    let button = document.createElement('button');
+                    button.className = "btn btn-primary";
+                    button.style.marginTop = "10px";
+                    button.type = "submit";
+                    button.innerHTML = "Download";
+                    main_text.appendChild(main_title);
+                    main_text.appendChild(main_writer);
+                    main_text.appendChild(main_publish);
+                    main_text.appendChild(button);
+                    document.getElementById("right").appendChild(main_text);
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

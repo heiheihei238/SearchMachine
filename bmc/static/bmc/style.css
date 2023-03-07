@@ -1,0 +1,127 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.searchContainer {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.container_left {
+    height: 90vh;
+    width: 30vw;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.container_left_title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 5%;
+    width: 100%;
+}
+
+.container_left_main {
+    width: 100%;
+    height: 92%;
+    margin-top: 3%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 15px;
+    box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
+    border-top: 1px solid rgba(255,255,255,0.5);
+    border-left: 1px solid rgba(255,255,255,0.5)
+}
+
+.container_left_main_intro {
+    font-size: medium;
+    font-weight: lighter;
+    padding: 3px;
+    margin-top: 7%;
+    width: 85%;
+}
+
+.container_left_main_choose {
+    font-size: medium;
+    font-weight: bolder;
+    margin: 7%;
+}
+
+.container_left_main_select {
+    width: 75%;
+    height: 5%;
+}
+
+.container_right {
+    height: 90vh;
+    width: 60vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255,255,255,0.3);
+    border-radius: 15px;
+    box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
+    border-top: 1px solid rgba(255,255,255,0.5);
+    border-left: 1px solid rgba(255,255,255,0.5)
+}
+
+.container_right_title {
+    width: 85%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 5%;
+    margin-left: 5%;
+}
+
+.container_right_sort {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 5%;
+    width: 85%;
+    position: relative;
+    margin-top: 2%;
+}
+
+.container_right_main {
+    height: 65%;
+    width: 85%;
+    overflow: scroll;
+    scroll-behavior: smooth;
+}
+
+.container_right_main_text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-top: black 1px solid;
+    margin-bottom: 15px;
+}
+
+.container_right_main_title {
+    margin-top: 10px;
+    font-weight: bolder;
+    font-size: x-large;
+    color: cornflowerblue;
+}
+
+.container_right_main_writer {
+    font-weight: lighter;
+    margin-top: 7px;
+}
+
+.container_right_main_publish {
+    font-weight: normal;
+    font-size: medium;
+    margin-top: 7px;
+}
