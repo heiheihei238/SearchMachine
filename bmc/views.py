@@ -11,8 +11,7 @@ def search(request):
 def afterselect(request):
     selected = request.GET['value']
     if selected == 'One':
-        # res = {"1.1": "1.1", "1.2": "1.2", "1.3": "1.3", "1.4": "1.4"}
-        res = "['1.1', '1.2', '1.3', '1.4']"
+        res = {"1.1": "1.1", "1.2": "1.2", "1.3": "1.3", "1.4": "1.4"}
         return HttpResponse(res)
     elif selected == 'Two':
         res = {"2.1": "2.1", "2.2": "2.2", "2.3": "2.3", "2.4": "2.4"}
@@ -26,8 +25,10 @@ def result(request):
     selectedWeb = request.GET['selectedWeb']
     selectedKat = request.GET['selectedKat']
     kriterien = request.GET['kriterien']
-    print(request.GET['start'])
+    start = request.GET['start']
+    print(start)
     print(request.GET['end'])
+    print(type(start))
     # 这里写爬虫代码
     results = {'result1': 'result1', 'result2': 'result2', 'result3': 'result3'}
     searchresult = {'results': results, 'resultnumber': len(results), 'kriterien': kriterien, 'selectedKat': selectedKat}

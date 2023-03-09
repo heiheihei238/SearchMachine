@@ -9,11 +9,14 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    overflow: scroll;
 }
 
 .container_left {
     height: 90vh;
     width: 30vw;
+    min-width: 300px;
+    margin-right: 10px;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -38,7 +41,8 @@
     border-radius: 15px;
     box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
     border-top: 1px solid rgba(255,255,255,0.5);
-    border-left: 1px solid rgba(255,255,255,0.5)
+    border-left: 1px solid rgba(255,255,255,0.5);
+    overflow: scroll;
 }
 
 .container_left_main_intro {
@@ -58,11 +62,13 @@
 .container_left_main_select {
     width: 75%;
     height: 5%;
+    min-height: 5%;
 }
 
 .container_right {
     height: 90vh;
     width: 60vw;
+    min-width: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
