@@ -92,6 +92,7 @@
 
             $.get("afterselect/",{'value': selectedValue}, function (select){
                 console.log(select)
+
                 let selection = eval('('+select+')')
                 console.log(selection)
                 let listFleet = "";
