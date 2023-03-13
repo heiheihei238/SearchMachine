@@ -31,7 +31,7 @@
             </div>
             <select class="container_left_main_select" aria-label="Default select example" name="choice" id="selectButton1" title="Please select...">
                 <option selected disabled>Please select...</option>
-                <option value="1" id="1">One</option>
+                <option value="1" id="1">BMC-Journal</option>
                 <option value="2" id="2">Two</option>
                 <option value="3" id="3">Three</option>
             </select>
@@ -137,26 +137,30 @@
 
             $.get("result/",{'selectedWeb': selectedWeb, 'selectedKat': selectedKat, 'kriterien': kriterien, 'start': start, 'end': end}, function (result){
                 let result1 = eval('('+result+')')
-                console.log(result)
+                console.log(result1)
                 document.getElementById("title").innerText = result1['resultnumber']+" Ergebnis(se) für "+result1['kriterien']+" in "+result1['selectedKat']
-                let zeige = ""
+                console.log(result1['results'])
                 for (let key in result1['results']) {
+                    console.log(result1['results'][key])
                     let main_text = document.createElement('div');
                     main_text.className = "container_right_main_text";
                     let main_title = document.createElement('div');
                     main_title.className = "container_right_main_title";
-                    main_title.innerHTML = "Overexpression of Lin28A in neural progenitor cells in vivo does not lead to brain tumor formation but results in reduced spine density";
+                    main_title.innerHTML = result1['results'][key]['title'];
                     let main_writer = document.createElement('div');
                     main_writer.className = "container_right_main_writer";
-                    main_writer.innerHTML = "Maximilian Middelkamp, Lisa Ruch, Christoph Krisp, Piotr Sumistawaski, Behnam Mohammadi, Matthias Dottermusch, Valerie Meister, Lusas Kuester, Hartmut Schueter, Sabine Windhorst and Julia E. Neumann ";
+                    main_writer.innerHTML = result1['results'][key]['authors'];
                     let main_publish = document.createElement('div');
                     main_publish.className = "container_right_main_publish";
-                    main_publish.innerHTML = "Published on: 20 November 2021"
+                    main_publish.innerHTML = result1['results'][key]['publish_time'];
                     let button = document.createElement('button');
                     button.className = "btn btn-primary";
                     button.style.marginTop = "10px";
                     button.type = "submit";
                     button.innerHTML = "Download";
+                    button.onclick = function (){
+                        window.open(result1['results'][key]['url'])
+                    };
                     main_text.appendChild(main_title);
                     main_text.appendChild(main_writer);
                     main_text.appendChild(main_publish);
