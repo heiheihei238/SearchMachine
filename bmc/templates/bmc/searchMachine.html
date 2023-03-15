@@ -123,7 +123,25 @@
         </div>
 
         <!-- for中引用字典是无效的，仅能够引用字典中的二级字典和内容 -->
-        <div class="container_right_main" id="right"></div>
+        <div class="container_right_main" id="right">
+            <div id="bubble" class="container_right_bubble">
+                <div class="container_bubble">
+                    <div class="bubble" style="animation-delay: -0.6s"></div>
+                    <div class="shadow" style="animation-delay: -0.6s"></div>
+                </div>
+                <div class="container_bubble" style="margin-left: 20px">
+                    <div class="bubble" style="animation-delay: -0.3s"></div>
+                    <div class="shadow" style="animation-delay: -0.3s"></div>
+                </div>
+                <div class="container_bubble" style="margin-left: 20px">
+                    <div class="bubble"></div>
+                    <div class="shadow"></div>
+                </div>
+                <div style="width: 100%; text-align: center; margin-top: 30px">
+                    Loading...
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script language="JavaScript">
@@ -134,12 +152,15 @@
             let kriterien = document.getElementById('keriterien').value;
             let start = document.getElementById('start').value;
             let end = document.getElementById('end').value;
+            let bubble = document.getElementById('bubble');
+            bubble.style.display = "flex";
 
             $.get("result/",{'selectedWeb': selectedWeb, 'selectedKat': selectedKat, 'kriterien': kriterien, 'start': start, 'end': end}, function (result){
                 let result1 = eval('('+result+')')
                 console.log(result1)
                 document.getElementById("title").innerText = result1['resultnumber']+" Ergebnis(se) für "+result1['kriterien']+" in "+result1['selectedKat']
                 console.log(result1['results'])
+                bubble.style.display = "none";
                 for (let key in result1['results']) {
                     console.log(result1['results'][key])
                     let main_text = document.createElement('div');

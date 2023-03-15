@@ -106,6 +106,15 @@
     scroll-behavior: smooth;
 }
 
+.container_right_bubble {
+    width: 100%;
+    display: none;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: center;
+    margin-top: 15%;
+}
+
 .container_right_main_text {
     display: flex;
     flex-direction: column;
@@ -130,4 +139,60 @@
     font-weight: normal;
     font-size: medium;
     margin-top: 7px;
+}
+
+.container_bubble{
+    width: 50px;
+    height: 50px;
+    position: relative;
+}
+.bubble{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    /*径向渐变*/
+    background: radial-gradient(circle at 75% 30%, #fff 5px,#ff21c0 8%, #5b5b5b 60%, #ff21c0 100%);
+    border-radius: 50%;
+    /*阴影*/
+    box-shadow: inset 0 0 20px #fff,
+    inset 10px 0 46px #b7d3f5,
+    inset 80px 0 60px #f2a0e0,
+    inset -20px -60px 100px #eee6aa,
+    inset 0 50px 140px #f2eaa0,
+    0 0 90px #fbfafa;
+    /*执行动画 动画名 时长 加速后减速 无限次播放*/
+    animation: bubble 3s ease-in-out infinite;
+}
+.shadow{
+    background-color: rgba(0,0,0,0.15);
+    width: 40px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    margin-left: -19px;
+    bottom: -12px;
+    /*一点点模糊效果*/
+    filter: blur(1px);
+    animation: 3s ease-in-out infinite shadow;
+}
+/*泡泡浮动动画*/
+@keyframes bubble{
+    0%,100%{
+        transform: translateY(0);
+    }
+    50%{
+        tranSform: translateY(-80px);
+    }
+}
+/*阴影动画*/
+@keyframes shadow {
+    0%,100%{
+        transform: scale(0.5);
+        background: #333233;
+    }
+    50%{
+        transform: scale(1);
+        background: #706e71;
+    }
 }
