@@ -43,8 +43,9 @@
                 Wählen Sie den Zeitraum der Veröffentlichung
             </div>
 
-            <div style="display: flex; flex-direction: row; width: 75%; align-items: center; justify-content: space-between">
-                <div class="row form-group" style="width: 45%">
+            <div style="display: flex; flex-direction: column; width: 60%; align-items: center; justify-content: space-between">
+                <div class="row form-group" style="width: 80%">
+                    <div>Startdatum: </div>
                     <div class="input-group date" id="datepicker1">
                         <input type="text" class="form-control" id="start">
                         <span class="input-group-append">
@@ -54,8 +55,8 @@
                         </span>
                     </div>
                 </div>
-                <div style="width: 5%">to</div>
-                <div class="row form-group" style="width: 45%">
+                <div class="row form-group" style="width: 80%; margin-top: 2%">
+                    <div>Enddatum: </div>
                     <div class="input-group date" id="datepicker2">
                         <input type="text" class="form-control" id="end">
                         <span class="input-group-append">
@@ -153,6 +154,12 @@
             let start = document.getElementById('start').value;
             let end = document.getElementById('end').value;
             let bubble = document.getElementById('bubble');
+            if (document.getElementById('main_text')) {
+                let old_main_texts = document.querySelectorAll(".container_right_main_text");
+                for (let old_main_text of old_main_texts) {
+                    document.getElementById('right').removeChild(old_main_text);
+                }
+            }
             bubble.style.display = "flex";
 
             $.get("result/",{'selectedWeb': selectedWeb, 'selectedKat': selectedKat, 'kriterien': kriterien, 'start': start, 'end': end}, function (result){
@@ -186,6 +193,7 @@
                     main_text.appendChild(main_writer);
                     main_text.appendChild(main_publish);
                     main_text.appendChild(button);
+                    main_text.id = "main_text";
                     document.getElementById("right").appendChild(main_text);
                 }
             })
