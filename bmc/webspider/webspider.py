@@ -1,25 +1,8 @@
-import datetime
+from datetime import datetime
 import time
 
 from bmc.webspider import tool
 from bs4 import BeautifulSoup
-
-# get all classifications url from a super classification
-# classification_urls = tool.get_sub_classification_urls("Chemistry")
-# 472 + 312 + 163 + 8 + 70 + 760 + 411 = 2196   2205
-# classification_urls = tool.get_sub_classification_urls("Criminology-and-Criminal-Justice")
-# print(classification_urls)
-
-# classification_url: http://actaneurocomms.biomedcentral.com/articles
-# page: https://actaneurocomms.biomedcentral.com/articles?searchType=journalSearch&sort=PubDate&page=2
-# for classification_url in classification_urls:
-#     classification_url = classification_url + '?tab=keyword&searchType=journalSearch&sort=Relevance&query=t-test'
-#     pages = tool.get_links_of_all_pages(classification_url)
-#     for page in pages:
-#         article = tool.get_all_article_links_in_a_page(page)
-#         articles.extend(article)
-#
-# print(len(articles))  # 472 + 312 + 163 + 8 + 70 + 760 + 411 = 2196
 
 
 def find_classification(url):
@@ -50,8 +33,8 @@ def search_bmc(sort=True, classification='', lower_time='01/01/2010', upper_time
     """
     :param sort: boolean.  True --> newest first
     :param classification: string.  id of the classification. for example: "Criminology-and-Criminal-Justice"
-    :param lower_time: datetime.date
-    :param upper_time: datetime.date
+    :param lower_time: string: '%m/%d/%Y'
+    :param upper_time: string
     :param keyword: string
     :return: dict
              key: title of the article: string
@@ -61,24 +44,19 @@ def search_bmc(sort=True, classification='', lower_time='01/01/2010', upper_time
                     3. 'url': string
                     4. 'authors': string
     """
-
-    articles_t_test = {}
-    articles_keyword = {}
+    start_time = datetime.strptime(lower_time, '%m/%d/%Y')
+    end_time = datetime.strptime(upper_time, '%m/%d/%Y')
+    results = {}
     classification_urls = tool.get_sub_classification_urls(classification)
     # classification_url: http://actaneurocomms.biomedcentral.com/articles
     for classification_url in classification_urls:
-        articles_t_test.update(tool.search_keyword(classification_url, 't-test'))
-        articles_keyword.update(tool.search_keyword(classification_url, keyword))
+        articles_t_test = tool.search_keyword(classification_url, 't-test', lower_time, upper_time)
+        for t, i in articles_t_test.items():
+            publish_time = datetime.strptime(i['publish_time'], '%d %B %Y')
+            if tool.keyword_is_in(i['url'], keyword) and start_time < publish_time < end_time:
+                results[t] = i
         print("search for " + tool.get_url_without_property(classification_url) + " complete")
-    results1 = tool.intersection(articles_keyword, articles_t_test)
-    results2 = {}
-    format_lt = datetime.datetime.strptime(lower_time, '%m/%d/%Y')
-    format_ut = datetime.datetime.strptime(upper_time, '%m/%d/%Y')
-    for title, info in results1.items():
-        format_pt = datetime.datetime.strptime(info['publish_time'], '%d %B %Y')
-        if format_lt <= format_pt <= format_ut:
-            results2[title] = info
-    return results2
+    return results
 
 
 # res = search_bmc(classification='Criminology-and-Criminal-Justice', keyword='p-value')

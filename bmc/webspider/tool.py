@@ -1,4 +1,5 @@
-import datetime
+from datetime import datetime
+import re
 import requests
 from bs4 import BeautifulSoup
 import time
@@ -60,6 +61,36 @@ def get_links_of_all_pages(url):
     return url_list
 
 
+def get_links_of_valid_pages(url_list, lower_time, upper_time):
+    """
+
+    :param url_list: all url of pagination
+    :param lower_time:string:'01/01/2010'
+    :param upper_time:
+    :return:the link list of valid pages in this classification
+    """
+    valid_list = []
+    start_time = datetime.strptime(lower_time, '%m/%d/%Y')
+    end_time = datetime.strptime(upper_time, '%m/%d/%Y')
+    for url in url_list:
+        content = handle_http_requests(url)
+        soup = BeautifulSoup(content, "html.parser")
+        times = [pub_time.text for pub_time in soup.find_all(attrs={"itemprop": "datePublished"})]
+        last_article_time = datetime.strptime(times[-1], '%d %B %Y')
+        first_article_time = datetime.strptime(times[0], '%d %B %Y')
+        if start_time < end_time < last_article_time < first_article_time:
+            continue
+        elif start_time < last_article_time < end_time < first_article_time:
+            valid_list.append(url)
+        elif start_time < last_article_time < first_article_time < end_time:
+            valid_list.append(url)
+        elif last_article_time < start_time < first_article_time < end_time:
+            valid_list.append(url)
+        elif last_article_time < first_article_time < start_time < end_time:
+            break
+    return valid_list
+
+
 def get_all_article_links_in_a_page(url):
     """
     get all article links in a page
@@ -104,45 +135,45 @@ def get_article_info(url):
     return results
 
 
-# can optimize the calculate
-# def get_link_of_valid_page(url, lower_time, upper_time):
-#     """
-#     give the article links from lower_time to upper_time
-#     :param url: a concrete link that from a classification pagination
-#            for Example: https://actaneurocomms.biomedcentral.com/articles?tab=keyword&searchType=journalSearch&sort=PubDate&query=t-test&page=2
-#     :param lower_time: string 03/01/2023
-#     :param upper_time: string 03/03/2023
-#     :return: [string]
-#     """
-#     date1 = datetime.datetime.strptime(lower_time, '%m/%d/%Y')
-#     date2 = datetime.datetime.strptime(upper_time, '%m/%d/%Y')
-#     pages = get_links_of_all_pages(url)
-#     valid_pages = []
-#     for page in pages:
-#         last_time = get_last_article_time(page)
-#         first_time = get_first_article_time(page)
-#         if date2 > last_time:
-#             continue
-#         elif date1 < last_time & date2 > last_time & date2 < first_time:
-#             first_page = page
-#         elif
-
-
-def search_keyword(url, keyword):
+def search_keyword(url, keyword, start_time, end_time):
     """
     use the search engine that comes with the page
+    :param end_time:
+    :param start_time:string:'01/01/2010'
     :param keyword: search keyword
            for example: https://actaneurocomms.biomedcentral.com/articles
     :param url: a concrete link that from a classification pagination
-    :return: all article links that be found with the keyword. [string]
+    :return: dict
+             key: title of the article: string
+             value: a dict:
+                    1. 'title': string
+                    2. 'publish_time': string
+                    3. 'url': string
+                    4. 'authors': string
     """
-    url = url + '?tab=keyword&searchType=journalSearch&sort=Relevance&query=' + keyword
+    url = url + '?tab=keyword&searchType=journalSearch&sort=PubDate&query=' + keyword
     articles = {}
-    pages = get_links_of_all_pages(url)
+    pages = get_links_of_valid_pages(get_links_of_all_pages(url), start_time, end_time)
     for page in pages:
         article = get_article_info(page)
         articles.update(article)
     return articles
+
+
+def keyword_is_in(url, keyword):
+    """
+    Determine if the keyword is present in the article
+    :param url: the link of the article
+    :param keyword: User-defined keyword
+    :return: boolean
+    """
+    content = handle_http_requests(url)
+    soup = BeautifulSoup(content, "html.parser")
+    results = soup.find_all(text=re.compile(keyword, re.IGNORECASE))
+    if len(results) == 0:
+        return False
+    else:
+        return True
 
 
 def intersection(dict1, dict2):
