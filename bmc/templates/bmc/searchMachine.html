@@ -113,18 +113,33 @@
             ... Ergebnis(se) für ... in ...
         </h3>
         <div class="container_right_sort" style="margin-bottom: 5%;">
-             <div style="margin-right: 3%; font-weight: lighter">
+            <button class="btn btn-primary select-all" style="margin-right: 8px">Select All</button>
+            <button class="btn btn-primary unselect-all">Unselect All</button>
+             <!-- <div style="margin-right: 3%; font-weight: lighter">
                 Sortieren nach:
             </div>
             <select class="container_left_main_select" style="width: 10%; margin-right: 5%; height: 100%" aria-label="Default select example">
                 <option selected value="1">One</option>
                 <option value="2">Two</option>
                 <option value="3">Three</option>
-            </select>
+            </select> -->
         </div>
 
         <!-- for中引用字典是无效的，仅能够引用字典中的二级字典和内容 -->
         <div class="container_right_main" id="right">
+{#            <div class="container" style="border-top: black solid 2px; margin-bottom: 15px">#}
+{#                <div class="row">#}
+{#                    <div class="col-1" style="margin: auto"><input type="checkbox" class="checkbox"></div>#}
+{#                    <div class="col-11">#}
+{#                        <div class="container_right_main_title">Title</div>#}
+{#                        <div class="container_right_main_writer">Writer</div>#}
+{#                        <div class="container_right_main_publish">Publish</div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <label><input type="checkbox" class="checkbox"> Checkbox 2</label>#}
+{#            <label><input type="checkbox" class="checkbox"> Checkbox 3</label>#}
+
             <div id="bubble" class="container_right_bubble">
                 <div class="container_bubble">
                     <div class="bubble" style="animation-delay: -0.6s"></div>
@@ -145,6 +160,18 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $('.select-all').click(function() {
+            $('.checkbox').prop('checked', true);
+        });
+
+        $('.unselect-all').click(function() {
+            $('.checkbox').prop('checked', false);
+        });
+    });
+</script>
+
 <script language="JavaScript">
     $(document).ready(function (){
         $("#search").on("click", function (){
@@ -155,7 +182,7 @@
             let end = document.getElementById('end').value;
             let bubble = document.getElementById('bubble');
             if (document.getElementById('main_text')) {
-                let old_main_texts = document.querySelectorAll(".container_right_main_text");
+                let old_main_texts = document.querySelectorAll("row");
                 for (let old_main_text of old_main_texts) {
                     document.getElementById('right').removeChild(old_main_text);
                 }
@@ -171,7 +198,23 @@
                 for (let key in result1['results']) {
                     console.log(result1['results'][key])
                     let main_text = document.createElement('div');
-                    main_text.className = "container_right_main_text";
+                    main_text.className = "container";
+                    main_text.style.borderTop = "black solid 1px";
+                    main_text.style.marginBottom = "15px";
+                    let main_row = document.createElement('div');
+                    main_row.className = "row";
+                    main_text.appendChild(main_row);
+                    let main_col1 = document.createElement('div');
+                    main_col1.className = "col-1";
+                    main_col1.style.margin = "auto";
+                    let checkBox = document.createElement('input');
+                    checkBox.type = "checkbox";
+                    checkBox.className = "checkbox";
+                    main_col1.appendChild(checkBox);
+                    let main_col11 = document.createElement('div');
+                    main_col11.className = "col-11";
+                    main_row.appendChild(main_col1);
+                    main_row.appendChild(main_col11);
                     let main_title = document.createElement('div');
                     main_title.className = "container_right_main_title";
                     main_title.innerHTML = result1['results'][key]['title'];
@@ -189,10 +232,10 @@
                     button.onclick = function (){
                         window.open(result1['results'][key]['url'])
                     };
-                    main_text.appendChild(main_title);
-                    main_text.appendChild(main_writer);
-                    main_text.appendChild(main_publish);
-                    main_text.appendChild(button);
+                    main_col11.appendChild(main_title);
+                    main_col11.appendChild(main_writer);
+                    main_col11.appendChild(main_publish);
+                    main_col11.appendChild(button);
                     main_text.id = "main_text";
                     document.getElementById("right").appendChild(main_text);
                 }
