@@ -78,11 +78,14 @@ def save(request):
 
 
 def download_pdf(request):
-    path = os.getcwd() + '\\' + datetime.now().date().__str__().replace("-", "_")
-    os.mkdir(path)
-    for i in range(0,10):
-        filename = i.__str__() + ".txt"
-        with open(path + "\\" + filename, "w", encoding="utf-8") as file:
-            file.write("i")
+    print(request.GET['index'])
+    path = os.getcwd()
+    timedate = datetime.now().date().__str__().replace("-", "_") + "_" + datetime.now().strftime("%H_%M_%S")
+    if not os.path.exists(timedate):
+        os.mkdir(path + "\\" + timedate)
+        for i in range(0, 10):
+            filename = i.__str__() + ".txt"
+            with open(path + "\\" + timedate + "\\" + filename, "w", encoding="utf-8") as file:
+                file.write("i")
     print("download successfully")
     return HttpResponse("Successfully")

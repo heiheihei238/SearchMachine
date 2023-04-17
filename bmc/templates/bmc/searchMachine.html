@@ -136,7 +136,14 @@
         <script>
             $(document).ready(function (){
                 $("#download").on("click", function (){
-                    $.get("download/")
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    const checkedIndexes = [];
+                    checkboxes.forEach(function(checkbox, index) {
+                        if (checkbox.checked) {
+                            checkedIndexes.push(index);
+                        }
+                    });
+                    $.get("download/", {'index': checkedIndexes.toString()})
                 })
             })
         </script>
@@ -199,7 +206,7 @@
             let end = document.getElementById('end').value;
             let bubble = document.getElementById('bubble');
             if (document.getElementById('main_text')) {
-                let old_main_texts = document.querySelectorAll("row");
+                let old_main_texts = document.querySelectorAll(".container");
                 for (let old_main_text of old_main_texts) {
                     document.getElementById('right').removeChild(old_main_text);
                 }
