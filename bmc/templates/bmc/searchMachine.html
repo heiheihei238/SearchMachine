@@ -114,7 +114,9 @@
         </h3>
         <div class="container_right_sort" style="margin-bottom: 5%;">
             <button class="btn btn-primary select-all" style="margin-right: 8px">Select All</button>
-            <button class="btn btn-primary unselect-all">Unselect All</button>
+            <button class="btn btn-primary unselect-all" style="margin-right: 8px">Unselect All</button>
+            <button class="btn btn-primary" id="save" style="margin-right: 8px">Save</button>
+            <button class="btn btn-primary" id="download">Download selected</button>
              <!-- <div style="margin-right: 3%; font-weight: lighter">
                 Sortieren nach:
             </div>
@@ -124,21 +126,36 @@
                 <option value="3">Three</option>
             </select> -->
         </div>
+        <script>
+            $(document).ready(function (){
+                $("#save").on("click", function (){
+                    $.get("save/")
+                })
+            })
+        </script>
+        <script>
+            $(document).ready(function (){
+                $("#download").on("click", function (){
+                    $.get("download/")
+                })
+            })
+        </script>
 
         <!-- for中引用字典是无效的，仅能够引用字典中的二级字典和内容 -->
         <div class="container_right_main" id="right">
-{#            <div class="container" style="border-top: black solid 2px; margin-bottom: 15px">#}
-{#                <div class="row">#}
-{#                    <div class="col-1" style="margin: auto"><input type="checkbox" class="checkbox"></div>#}
-{#                    <div class="col-11">#}
-{#                        <div class="container_right_main_title">Title</div>#}
-{#                        <div class="container_right_main_writer">Writer</div>#}
-{#                        <div class="container_right_main_publish">Publish</div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#            <label><input type="checkbox" class="checkbox"> Checkbox 2</label>#}
-{#            <label><input type="checkbox" class="checkbox"> Checkbox 3</label>#}
+            <!-- this is an example of a result item
+            <div class="container" style="border-top: black solid 2px; margin-bottom: 15px">
+                <div class="row">
+                    <div class="col-1" style="margin: auto"><input type="checkbox" class="checkbox"></div>
+                    <div class="col-11">
+                        <div class="container_right_main_title">Title</div>
+                        <div class="container_right_main_writer">Writer</div>
+                        <div class="container_right_main_publish">Publish</div>
+                    </div>
+                </div>
+            </div>
+            <label><input type="checkbox" class="checkbox"> Checkbox 2</label>
+            <label><input type="checkbox" class="checkbox"> Checkbox 3</label> -->
 
             <div id="bubble" class="container_right_bubble">
                 <div class="container_bubble">
