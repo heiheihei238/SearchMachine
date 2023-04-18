@@ -116,7 +116,8 @@
             <button class="btn btn-primary select-all" style="margin-right: 8px">Select All</button>
             <button class="btn btn-primary unselect-all" style="margin-right: 8px">Unselect All</button>
             <button class="btn btn-primary" id="save" style="margin-right: 8px">Save</button>
-            <button class="btn btn-primary" id="download">Download selected</button>
+            <button class="btn btn-primary" id="download" style="margin-right: 8px">Download selected</button>
+            <button class="btn btn-primary" id="static">Statische Result</button>
              <!-- <div style="margin-right: 3%; font-weight: lighter">
                 Sortieren nach:
             </div>
@@ -144,6 +145,14 @@
                         }
                     });
                     $.get("download/", {'index': checkedIndexes.toString()})
+                })
+            })
+        </script>
+        <script>
+            $(document).ready(function (){
+                $("#static").on("click", function (){
+                    $.get("static/")
+                    window.open("static/", "Static_Result", "width=800,height=600")
                 })
             })
         </script>

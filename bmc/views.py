@@ -1,13 +1,16 @@
 import json
 import os
 
-import requests
-import io
-
 from django.http import HttpResponse
 from django.shortcuts import render
 from datetime import datetime
 from bmc.webspider import webspider
+
+from flask import Flask, render_template
+import matplotlib.pyplot as plt
+import io
+import base64
+import numpy as np
 
 
 class SaveItem:
@@ -78,7 +81,6 @@ def save(request):
 
 
 def download_pdf(request):
-    print(request.GET['index'])
     path = os.getcwd()
     timedate = datetime.now().date().__str__().replace("-", "_") + "_" + datetime.now().strftime("%H_%M_%S")
     if not os.path.exists(timedate):
@@ -89,3 +91,20 @@ def download_pdf(request):
                 file.write("i")
     print("download successfully")
     return HttpResponse("Successfully")
+
+
+def static_result(request):
+    # 生成柱状图
+    x = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']
+    y = [10, 20, 30, 40, 50, 60, 70]
+    plt.bar(x, y)
+
+    # 将图表转换为base64编码的字符串
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    base64_image = base64.b64encode(buffer.getvalue()).decode()
+
+    # 渲染模板并将图表插入到HTML中
+    context = {'chart_data': base64_image}
+    return render(request, 'bmc/static.html', context)

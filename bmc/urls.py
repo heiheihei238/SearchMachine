@@ -8,5 +8,6 @@ urlpatterns = [
     path('search/afterselect/', views.afterselect, name='afterselect'),
     path('search/result/', views.result, name='result'),
     path('search/save/', views.save, name='save'),
-    path('search/download/',views.download_pdf, name='download')
+    path('search/download/', views.download_pdf, name='download'),
+    path('search/static/', views.static_result, name='static')
 ]
