@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -82,14 +83,20 @@ def save(request):
 
 # Download all the selected pdf in a special folder in the workspace
 def download_pdf(request):
+    index = request.GET['index']
+    selected = eval('['+index+']')
     path = os.getcwd()
     timedate = datetime.now().date().__str__().replace("-", "_") + "_" + datetime.now().strftime("%H_%M_%S")
     if not os.path.exists(timedate):
         os.mkdir(path + "\\" + timedate)
-        for i in range(0, 10):
-            filename = i.__str__() + ".txt"
-            with open(path + "\\" + timedate + "\\" + filename, "w", encoding="utf-8") as file:
-                file.write("i")
+        location = 0
+        for i in SaveItem.searchresult:
+            if location in selected:
+                response = requests.get(SaveItem.searchresult[i]['url'])
+                bytes_io = io.BytesIO(response.content)
+                with open("%s.PDF" % SaveItem.searchresult[i]['title'], mode='wb') as f:
+                    f.write(bytes_io.getvalue())
+            location += 1
     print("download successfully")
     return HttpResponse("Successfully")
 
