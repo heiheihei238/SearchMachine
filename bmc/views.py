@@ -6,11 +6,9 @@ from django.shortcuts import render
 from datetime import datetime
 from bmc.webspider import webspider
 
-from flask import Flask, render_template
 import matplotlib.pyplot as plt
 import io
 import base64
-import numpy as np
 
 
 class SaveItem:
@@ -22,16 +20,17 @@ class SaveItem:
     searchresult = {}
 
 
+# Jumping the page to searchMachine.html
 def search(request):
     return render(request, 'bmc/searchMachine.html')
 
 
-def afterselect(request):
+# Change the content of the second drop-down box after the first one has been selected
+def after_select(request):
     selected = request.GET['value']
     if selected == 'BMC-Journal':
         classifications = webspider.find_classification('https://www.biomedcentral.com/journals')
         classifications = str(classifications)
-        # res = {"1.1": "1.1", "1.2": "1.2", "1.3": "1.3", "1.4": "1.4"}
         return HttpResponse(classifications)
     elif selected == 'Two':
         res = {"2.1": "2.1", "2.2": "2.2", "2.3": "2.3", "2.4": "2.4"}
@@ -41,13 +40,13 @@ def afterselect(request):
         return HttpResponse(json.dumps(res))
 
 
+# Call the webspider to search the result and transfer to the front-end
 def result(request):
     selectedWeb = request.GET['selectedWeb']
     selectedKat = request.GET['selectedKat']
     kriterien = request.GET['kriterien']
     start = request.GET['start']
     end = request.GET['end']
-    # 这里写爬虫代码
     results = webspider.search_bmc(classification=selectedKat.replace('_', '-'), lower_time=start, upper_time=end,
                                    keyword=kriterien)
     # results = {'result1': 'result1', 'result2': 'result2', 'result3': 'result3'}
@@ -62,6 +61,7 @@ def result(request):
     return HttpResponse(json.dumps(searchresult))
 
 
+# Save the result and the condition information in workspace
 def save(request):
     data = ["Journal:" + SaveItem.selectedWeb, "Classify: " + SaveItem.selectedKat, "Criteria: " + SaveItem.kriterien,
             "start "
@@ -80,6 +80,7 @@ def save(request):
     return HttpResponse("Successfully")
 
 
+# Download all the selected pdf in a special folder in the workspace
 def download_pdf(request):
     path = os.getcwd()
     timedate = datetime.now().date().__str__().replace("-", "_") + "_" + datetime.now().strftime("%H_%M_%S")
@@ -93,18 +94,16 @@ def download_pdf(request):
     return HttpResponse("Successfully")
 
 
+# Show the statistical result of the Search
 def static_result(request):
-    # 生成柱状图
     x = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']
     y = [10, 20, 30, 40, 50, 60, 70]
     plt.bar(x, y)
 
-    # 将图表转换为base64编码的字符串
     buffer = io.BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
     base64_image = base64.b64encode(buffer.getvalue()).decode()
 
-    # 渲染模板并将图表插入到HTML中
     context = {'chart_data': base64_image}
     return render(request, 'bmc/static.html', context)
