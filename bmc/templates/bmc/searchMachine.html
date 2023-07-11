@@ -83,6 +83,9 @@
                 else if (patter === 2) {
                     x.options[2].selected = true;
                     $("#selectButton1").attr("disabled","disabled");
+                    let listFleet1 = ""
+                    listFleet1 += "<option value='All'>All</option>";
+                    $("#selectButton2").append(listFleet1)
                     $("#selectButton2").attr("disabled","disabled");
                 }
                 else {
