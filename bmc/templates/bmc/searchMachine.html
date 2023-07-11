@@ -13,14 +13,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </head>
-<body>
+<body id="body" class="body">
 <div class="searchContainer">
 
     <!-- left container -->
     <div class="container_left">
-        <h3 class="container_left_title">
+        <div>
+            <a href="http://127.0.0.1:8000/bmc/">
+                <i class="fa fa-arrow-left" style="font-size: 36px"></i>
+            </a>
+            <h3 class="container_left_title">
             t-test search machine
-        </h3>
+            </h3>
+        </div>
         <div class="container_left_main">
             {% csrf_token %}
             <div class="container_left_main_intro">
@@ -30,8 +35,7 @@
                 Wählen Sie eine Zeitungswebsite
             </div>
             <!-- The first drop-down box, which control the selection of journals -->
-            <select class="container_left_main_select" aria-label="Default select example" name="choice" id="selectButton1" title="Please select...">
-                <option selected disabled>Please select...</option>
+            <select class="container_left_main_select" aria-label="Default select example" name="choice" id="selectButton1" title="Please select..." aria-readonly="true">
                 <option value="1" id="1">BMC-Journal</option>
                 <option value="2" id="2">PLOS</option>
                 <option value="3" id="3">Science-Translational-Medicine</option>
@@ -70,6 +74,34 @@
                     </div>
                 </div>
             </div>
+            <script type="text/javascript">
+                let x = document.getElementById("selectButton1");
+                const patter = JSON.parse({{ journal }})
+                if (patter === 1) {
+                    x.options[0].selected = true;
+                }
+                else if (patter === 2) {
+                    x.options[2].selected = true;
+                    $("#selectButton1").attr("disabled","disabled");
+                    $("#selectButton2").attr("disabled","disabled");
+                }
+                else {
+                    x.options[1].selected = true;
+                }
+                console.log("select1 finish")
+                if (patter !== 2) {
+                    let select = {{ classification|safe }};
+                    let selection = eval('('+select+')')
+                    console.log(selection)
+                    let listFleet = "";
+                    for(let key in selection){
+                        listFleet += "<option value='" + selection[key] + "'>" + selection[key] + "</option>";
+                    }
+                    $("#selectButton2").append(listFleet);
+                    document.getElementById("selectButton2").removeAttribute("disabled");
+                    $("#selectButton1").attr("disabled","disabled");
+                }
+            </script>
             <!-- Control the datepicker function -->
             <script type="text/javascript">
                 $(function() {
@@ -158,6 +190,7 @@
 <script>
     $(document).ready(function (){
         $("#search").on("click", function (){
+            $("#selectButton1").removeAttr("disabled");
             let selectedWeb = $('select#selectButton1 option:selected').text();
             let selectedKat = $('select#selectButton2 option:selected').text();
             let kriterien = document.getElementById('keriterien').value;
@@ -171,6 +204,7 @@
                 }
             }
             bubble.style.display = "flex";
+            $("#selectButton1").attr("disabled","disabled");
 
             $.get("result/",{'selectedWeb': selectedWeb, 'selectedKat': selectedKat, 'kriterien': kriterien, 'start': start, 'end': end}, function (result){
                 let result1 = eval('('+result+')')
@@ -268,6 +302,31 @@
         $('.unselect-all').click(function() {
             $('.checkbox').prop('checked', false);
         });
+    });
+</script>
+<script>
+    // 页面加载完成时执行
+    document.addEventListener('DOMContentLoaded', function() {
+    // 添加渐进动画类名
+    document.getElementById('body').classList.add('content-fade-in');
+    });
+
+    // 监听页面链接点击事件
+    document.addEventListener('click', function(event) {
+        let target = event.target;
+
+        // 检查点击的元素是否是链接
+        if (target.tagName === 'A') {
+            event.preventDefault(); // 阻止默认的页面跳转行为
+
+            // 添加渐出动画类名
+            document.getElementById('body').classList.add('content-fade-out');
+
+            // 在动画结束后进行页面跳转
+            setTimeout(function() {
+            window.location.href = target.href;
+            }, 1000); // 这里的1000表示动画持续时间，单位是毫秒
+        }
     });
 </script>
 </body>
