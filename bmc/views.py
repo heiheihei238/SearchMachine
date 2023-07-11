@@ -23,9 +23,23 @@ class SaveItem:
     diagram = {}
 
 
+def welcome(request):
+    return render(request, 'bmc/welcomePage.html')
+
+
 # Jumping the page to searchMachine.html
-def search(request):
-    return render(request, 'bmc/searchMachine.html')
+def search(request, journal):
+    selected = journal
+    classifications = ""
+    if selected == 1:
+        classifications = webspider.find_classification('https://www.biomedcentral.com/journals')
+        classifications = str(classifications)
+    elif selected == 2:
+        classifications = ["None"]
+    else:
+        classifications = webspider.find_classification("https://plos.org/")
+        classifications = str(classifications)
+    return render(request, 'bmc/searchMachine.html', {"journal": journal, "classification": json.dumps(classifications)})
 
 
 # Change the content of the second drop-down box after the first one has been selected
@@ -39,8 +53,9 @@ def after_select(request):
         res = {"None": "None"}
         return HttpResponse(json.dumps(res))
     else:
-        res = {"3.1": "3.1", "3.2": "3.2", "3.3": "3.3", "3.4": "3.4"}
-        return HttpResponse(json.dumps(res))
+        classifications = webspider.find_classification("https://plos.org/")
+        classifications = str(classifications)
+        return HttpResponse(classifications)
 
 
 # Call the webspider to search the result and transfer to the front-end

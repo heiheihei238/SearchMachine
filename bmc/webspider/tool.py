@@ -2,7 +2,6 @@ from datetime import datetime
 import re
 import requests
 from bs4 import BeautifulSoup
-import time
 
 
 def handle_http_requests(url):

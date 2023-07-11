@@ -22,8 +22,15 @@ def find_classification(url):
         classification_name.pop()
         return classification_name
 
-    elif url == 'https://plos.org/research-communities':
-        pass
+    elif url == 'https://plos.org/':
+        text = soup.find_all(attrs={'class': 'elementor-text-editor elementor-clearfix'})
+        classification_name = []
+        for a in text:
+            if a.find('a'):
+                for b in a.find_all('a'):
+                    classification_name.append(b.get_text().replace(' ', '_'))
+        classification_name.pop()
+        return classification_name
 
     else:
         pass
