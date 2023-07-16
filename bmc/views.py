@@ -7,6 +7,7 @@ from django.shortcuts import render
 from datetime import datetime
 from bmc.webspider import webspider
 from bmc.webspider import webspider2
+from bmc.webspider import webspider3
 
 import matplotlib.pyplot as plt
 import io
@@ -21,6 +22,7 @@ class SaveItem:
     end = 0
     searchresult = {}
     diagram = {}
+    classification = []
 
 
 def welcome(request):
@@ -38,6 +40,7 @@ def search(request, journal):
         classifications = ["None"]
     else:
         classifications = webspider.find_classification("https://plos.org/")
+        SaveItem.classification = classifications
         classifications = str(classifications)
     return render(request, 'bmc/searchMachine.html', {"journal": journal, "classification": json.dumps(classifications)})
 
@@ -59,7 +62,7 @@ def after_select(request):
 
 
 # Call the webspider to search the result and transfer to the front-end
-def result(request):
+def result(request, journal):
     selectedWeb = request.GET['selectedWeb']
     selectedKat = request.GET['selectedKat']
     kriterien = request.GET['kriterien']
@@ -77,6 +80,18 @@ def result(request):
         SaveItem.start = start
         SaveItem.end = end
         return HttpResponse(json.dumps(searchresult))
+    elif selectedWeb == "PLOS":
+        results = webspider3.search_plos(classification=find_selectedKat_num(str(selectedKat)), start_time=start, end_time=end, keyword=kriterien)
+        searchresult = {'results': results, 'resultnumber': len(results), 'kriterien': kriterien,
+                        'selectedKat': selectedKat}
+        SaveItem.searchresult = results
+        SaveItem.selectedWeb = selectedWeb
+        SaveItem.selectedKat = selectedKat
+        SaveItem.kriterien = kriterien
+        SaveItem.start = start
+        SaveItem.end = end
+        SaveItem.diagram = results['diagram']
+        return HttpResponse(json.dumps(searchresult))
     elif selectedWeb == "Science-Translational-Medicine":
         results = webspider2.search_science(start, end, kriterien)
         searchresult = {'results': results['articles'], 'resultnumber': len(results['articles']),
@@ -92,8 +107,18 @@ def result(request):
         return HttpResponse(json.dumps(searchresult))
 
 
+def find_selectedKat_num(selectedKat):
+    n = 0
+    for p in SaveItem.classification:
+        if p == selectedKat:
+            return n
+        else:
+            n += 1
+    return 12
+
+
 # Save the result and the condition information in workspace
-def save(request):
+def save(request, journal):
     data = ["Journal:" + SaveItem.selectedWeb, "Classify: " + SaveItem.selectedKat, "Criteria: " + SaveItem.kriterien,
             "start "
             "time: " + SaveItem.start.__str__(), "end time: " + SaveItem.end.__str__()]
@@ -103,16 +128,16 @@ def save(request):
         for line in data:
             file.write(line + "\n")
     with open(filename, "a", encoding="utf-8") as file:
-        for key in result:
+        for key in result['articles']:
             file.write("\n")
-            for subkey in result[key]:
-                file.write(result[key][subkey] + "\n")
+            for subkey in result['articles'][key]:
+                file.write(result['articles'][key][subkey] + "\n")
     print("saved successfully")
     return HttpResponse("Successfully")
 
 
 # Download all the selected pdf in a special folder in the workspace
-def download_pdf(request):
+def download_pdf(request, journal):
     index = request.GET['index']
     selected = eval('[' + index + ']')
     print(selected)
@@ -121,9 +146,9 @@ def download_pdf(request):
     if not os.path.exists(timedate):
         os.mkdir(path + "\\" + timedate)
         location = 0
-        for i in SaveItem.searchresult:
+        for i in SaveItem.searchresult['articles']:
             if location in selected:
-                response = requests.get(SaveItem.searchresult[i]['pdf'])
+                response = requests.get(SaveItem.searchresult['articles'][i]['pdf'])
                 bytes_io = io.BytesIO(response.content)
                 with open(path + "\\" + timedate + "\\" + SaveItem.searchresult[i]['title'] + ".PDF", mode='wb') as f:
                     f.write(bytes_io.getvalue())
@@ -133,7 +158,7 @@ def download_pdf(request):
 
 
 # Show the statistical result of the Search
-def static_result(request):
+def static_result(request, journal):
     x = list(SaveItem.diagram.keys())
     print(x)
     y = list(SaveItem.diagram.values())

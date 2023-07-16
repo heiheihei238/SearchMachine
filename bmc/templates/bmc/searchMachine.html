@@ -74,46 +74,7 @@
                     </div>
                 </div>
             </div>
-            <script type="text/javascript">
-                let x = document.getElementById("selectButton1");
-                const patter = JSON.parse({{ journal }})
-                if (patter === 1) {
-                    x.options[0].selected = true;
-                }
-                else if (patter === 2) {
-                    x.options[2].selected = true;
-                    $("#selectButton1").attr("disabled","disabled");
-                    let listFleet1 = ""
-                    listFleet1 += "<option value='All'>All</option>";
-                    $("#selectButton2").append(listFleet1)
-                    $("#selectButton2").attr("disabled","disabled");
-                }
-                else {
-                    x.options[1].selected = true;
-                }
-                console.log("select1 finish")
-                if (patter !== 2) {
-                    let select = {{ classification|safe }};
-                    let selection = eval('('+select+')')
-                    console.log(selection)
-                    let listFleet = "";
-                    for(let key in selection){
-                        listFleet += "<option value='" + selection[key] + "'>" + selection[key] + "</option>";
-                    }
-                    $("#selectButton2").append(listFleet);
-                    document.getElementById("selectButton2").removeAttribute("disabled");
-                    $("#selectButton1").attr("disabled","disabled");
-                }
-            </script>
-            <!-- Control the datepicker function -->
-            <script type="text/javascript">
-                $(function() {
-                    $('#datepicker1').datepicker();
-                });
-                $(function() {
-                    $('#datepicker2').datepicker();
-                });
-            </script>
+
             <div class="container_left_main_choose">
                 Bitte geben Sie ihre Suchkriterien ein
             </div>
@@ -165,30 +126,69 @@
     </div>
 </div>
 
-
-
-<!-- Control the linkage between drop-down boxes -->
-<script>
-    $(document).ready(function (){
-        $("#selectButton1").on("change", function (){
-            let selectedValue = $('select#selectButton1 option:selected').text();
-            document.getElementById("selectButton2").options.length = 0;
-
-            $.get("afterselect/",{'value': selectedValue}, function (select){
-                console.log(select)
-
-                let selection = eval('('+select+')')
-                console.log(selection)
-                let listFleet = "";
-                for(let key in selection){
-                        listFleet += "<option value='" + selection[key] + "'>" + selection[key] + "</option>";
-                }
-                $("#selectButton2").append(listFleet);
-                document.getElementById("selectButton2").removeAttribute("disabled")
-            })
-        })
-    })
+<script type="text/javascript">
+    let x = document.getElementById("selectButton1");
+    const patter = JSON.parse({{ journal }})
+    if (patter === 1) {
+        x.options[0].selected = true;
+    }
+    else if (patter === 2) {
+        x.options[2].selected = true;
+        $("#selectButton1").attr("disabled","disabled");
+        let listFleet1 = ""
+        listFleet1 += "<option value='All'>All</option>";
+        $("#selectButton2").append(listFleet1)
+        $("#selectButton2").attr("disabled","disabled");
+    }
+    else {
+        x.options[1].selected = true;
+    }
+    console.log("select1 finish")
+    if (patter !== 2) {
+        let select = {{ classification|safe }};
+        let selection = eval('('+select+')')
+        console.log(selection)
+        let listFleet = "";
+        for(let key in selection){
+            listFleet += "<option value='" + selection[key] + "'>" + selection[key] + "</option>";
+        }
+        $("#selectButton2").append(listFleet);
+        document.getElementById("selectButton2").removeAttribute("disabled");
+        $("#selectButton1").attr("disabled","disabled");
+    }
 </script>
+<!-- Control the datepicker function -->
+<script type="text/javascript">
+    $(function() {
+        $('#datepicker1').datepicker();
+    });
+    $(function() {
+        $('#datepicker2').datepicker();
+    });
+</script>
+
+{#<!-- Control the linkage between drop-down boxes -->#}
+{#<script>#}
+{#    $(document).ready(function (){#}
+{#        $("#selectButton1").on("change", function (){#}
+{#            let selectedValue = $('select#selectButton1 option:selected').text();#}
+{#            document.getElementById("selectButton2").options.length = 0;#}
+{##}
+{#            $.get("afterselect/",{'value': selectedValue}, function (select){#}
+{#                console.log(select)#}
+{##}
+{#                let selection = eval('('+select+')')#}
+{#                console.log(selection)#}
+{#                let listFleet = "";#}
+{#                for(let key in selection){#}
+{#                        listFleet += "<option value='" + selection[key] + "'>" + selection[key] + "</option>";#}
+{#                }#}
+{#                $("#selectButton2").append(listFleet);#}
+{#                document.getElementById("selectButton2").removeAttribute("disabled")#}
+{#            })#}
+{#        })#}
+{#    })#}
+{#</script>#}
 <!-- Show search results in the content section on the right -->
 <script>
     $(document).ready(function (){
@@ -215,8 +215,8 @@
                 document.getElementById("title").innerText = result1['resultnumber']+" Ergebnis(se) für "+result1['kriterien']+" in "+result1['selectedKat']
                 console.log(result1['results'])
                 bubble.style.display = "none";
-                for (let key in result1['results']) {
-                    console.log(result1['results'][key])
+                for (let key in result1['results']['articles']) {
+                    console.log(result1['results']['articles'][key])
                     let main_text = document.createElement('div');
                     main_text.className = "container";
                     main_text.style.borderTop = "black solid 1px";
@@ -237,20 +237,20 @@
                     main_row.appendChild(main_col11);
                     let main_title = document.createElement('div');
                     main_title.className = "container_right_main_title";
-                    main_title.innerHTML = result1['results'][key]['title'];
+                    main_title.innerHTML = result1['results']['articles'][key]['title'];
                     let main_writer = document.createElement('div');
                     main_writer.className = "container_right_main_writer";
-                    main_writer.innerHTML = result1['results'][key]['authors'];
+                    main_writer.innerHTML = result1['results']['articles'][key]['authors'];
                     let main_publish = document.createElement('div');
                     main_publish.className = "container_right_main_publish";
-                    main_publish.innerHTML = result1['results'][key]['publish_time'];
+                    main_publish.innerHTML = result1['results']['articles'][key]['published_time'];
                     let button = document.createElement('button');
                     button.className = "btn btn-primary";
                     button.style.marginTop = "10px";
                     button.type = "submit";
                     button.innerHTML = "Download";
                     button.onclick = function (){
-                        window.open(result1['results'][key]['url'])
+                        window.open(result1['results']['articles'][key]['url'])
                     };
                     main_col11.appendChild(main_title);
                     main_col11.appendChild(main_writer);

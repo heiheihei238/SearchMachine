@@ -30,6 +30,8 @@ def find_classification(url):
                 for b in a.find_all('a'):
                     classification_name.append(b.get_text().replace(' ', '_'))
         classification_name.pop()
+        classification_name.pop()
+        classification_name.pop()
         return classification_name
 
     else:
@@ -74,3 +76,4 @@ def search_bmc(sort=True, classification='', lower_time='01/01/2010', upper_time
 # print(dic1)
 # print(dic2)
 # print(tool.intersection(dic1, dic2))
+

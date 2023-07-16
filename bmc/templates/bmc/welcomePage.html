@@ -34,28 +34,30 @@
     </div>
 </div>
 </body>
+
+<!-- Involves js that fades in and out on link jumps -->
 <script>
-    // 页面加载完成时执行
+    // Executed when the page is loaded
     document.addEventListener('DOMContentLoaded', function() {
-    // 添加渐进动画类名
+    // Add fade-in animation class name
     document.getElementById('body').classList.add('content-fade-in');
     });
 
-    // 监听页面链接点击事件
+    // Listening for page link clicks
     document.addEventListener('click', function(event) {
         let target = event.target;
 
-        // 检查点击的元素是否是链接
+        // Check if the clicked element is a link
         if (target.tagName === 'A') {
-            event.preventDefault(); // 阻止默认的页面跳转行为
+            event.preventDefault(); // Blocking the default page jump behavior
 
-            // 添加渐出动画类名
+            // Adding a Fade-out Animation Class Name
             document.getElementById('body').classList.add('content-fade-out');
 
-            // 在动画结束后进行页面跳转
+            // Doing the page jump after the end of the animation
             setTimeout(function() {
             window.location.href = target.href;
-            }, 1000); // 这里的1000表示动画持续时间，单位是毫秒
+            }, 1000);
         }
     });
 </script>
