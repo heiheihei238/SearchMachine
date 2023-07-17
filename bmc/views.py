@@ -50,6 +50,7 @@ def after_select(request):
     selected = request.GET['value']
     if selected == 'BMC-Journal':
         classifications = webspider.find_classification('https://www.biomedcentral.com/journals')
+        classifications.append("All")
         classifications = str(classifications)
         return HttpResponse(classifications)
     elif selected == 'Science-Translational-Medicine':
@@ -68,43 +69,26 @@ def result(request, journal):
     kriterien = request.GET['kriterien']
     start = request.GET['start']
     end = request.GET['end']
+    results = {}
     if selectedWeb == "BMC-Journal":
-        results = webspider.search_bmc(classification=selectedKat.replace('_', '-'), lower_time=start, upper_time=end,
-                                       keyword=kriterien)
-        searchresult = {'results': results, 'resultnumber': len(results), 'kriterien': kriterien,
-                        'selectedKat': selectedKat}
-        SaveItem.searchresult = results
-        SaveItem.selectedWeb = selectedWeb
-        SaveItem.selectedKat = selectedKat
-        SaveItem.kriterien = kriterien
-        SaveItem.start = start
-        SaveItem.end = end
-        return HttpResponse(json.dumps(searchresult))
+        if selectedKat == "All":
+            results = webspider.search_bmc2(start_time=start, end_time=end, keyword=kriterien)
+        else:
+            results = webspider.search_bmc(classification=selectedKat, start_time=start, end_time=end, keyword=kriterien)
     elif selectedWeb == "PLOS":
         results = webspider3.search_plos(classification=find_selectedKat_num(str(selectedKat)), start_time=start, end_time=end, keyword=kriterien)
-        searchresult = {'results': results, 'resultnumber': len(results), 'kriterien': kriterien,
-                        'selectedKat': selectedKat}
-        SaveItem.searchresult = results
-        SaveItem.selectedWeb = selectedWeb
-        SaveItem.selectedKat = selectedKat
-        SaveItem.kriterien = kriterien
-        SaveItem.start = start
-        SaveItem.end = end
-        SaveItem.diagram = results['diagram']
-        return HttpResponse(json.dumps(searchresult))
     elif selectedWeb == "Science-Translational-Medicine":
         results = webspider2.search_science(start, end, kriterien)
-        searchresult = {'results': results['articles'], 'resultnumber': len(results['articles']),
-                        'kriterien': kriterien,
-                        'selectedKat': selectedKat}
-        SaveItem.searchresult = results['articles']
-        SaveItem.selectedWeb = selectedWeb
-        SaveItem.selectedKat = selectedKat
-        SaveItem.kriterien = kriterien
-        SaveItem.start = start
-        SaveItem.end = end
-        SaveItem.diagram = results['diagram']
-        return HttpResponse(json.dumps(searchresult))
+    searchresult = {'results': results, 'resultnumber': len(results), 'kriterien': kriterien,
+                    'selectedKat': selectedKat}
+    SaveItem.searchresult = results
+    SaveItem.selectedWeb = selectedWeb
+    SaveItem.selectedKat = selectedKat
+    SaveItem.kriterien = kriterien
+    SaveItem.start = start
+    SaveItem.end = end
+    SaveItem.diagram = results['diagram']
+    return HttpResponse(json.dumps(searchresult))
 
 
 def find_selectedKat_num(selectedKat):
@@ -128,10 +112,15 @@ def save(request, journal):
         for line in data:
             file.write(line + "\n")
     with open(filename, "a", encoding="utf-8") as file:
+        article_num = 1
         for key in result['articles']:
             file.write("\n")
-            for subkey in result['articles'][key]:
-                file.write(result['articles'][key][subkey] + "\n")
+            file.write("Article" + str(article_num) + ":\n")
+            file.write("Title: " + result['articles'][key]['title'] + "\n")
+            file.write("Published date: " + result['articles'][key]['published time'] + "\n")
+            file.write("Author: " + result['articles'][key]['authors'] + "\n")
+            file.write("Link: " + result['articles'][key]['url'] + "\n")
+            file.write("PDF link: " + result['articles'][key]['pdf'] + "\n")
     print("saved successfully")
     return HttpResponse("Successfully")
 
@@ -146,12 +135,14 @@ def download_pdf(request, journal):
     if not os.path.exists(timedate):
         os.mkdir(path + "\\" + timedate)
         location = 0
+        article_num = 1
         for i in SaveItem.searchresult['articles']:
             if location in selected:
                 response = requests.get(SaveItem.searchresult['articles'][i]['pdf'])
                 bytes_io = io.BytesIO(response.content)
-                with open(path + "\\" + timedate + "\\" + SaveItem.searchresult[i]['title'] + ".PDF", mode='wb') as f:
+                with open(path + "\\" + timedate + "\\" + "Article " + str(article_num) + ".PDF", mode='wb') as f:
                     f.write(bytes_io.getvalue())
+                article_num += 1
             location += 1
     print("download successfully")
     return HttpResponse("Successfully")

@@ -1,6 +1,3 @@
-from datetime import datetime
-import time
-
 from bmc.webspider import tool3
 
 

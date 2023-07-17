@@ -34,20 +34,20 @@ def handle_http_requests2(url):
     driver_path = "msedgedriver.exe"
     driver = webdriver.Edge(executable_path=driver_path)
     driver.get(url)
-    html_code = driver.page_source
+    html = driver.page_source
     # print(html)
     driver.quit()
     print(f"the url with {url} was opened")
-    return html_code
+    return html
 
 
 def convert_date_form(date_str):
     """
-    :param date_str: "12/31/2017"
-    :return: new_date_str = "31 Dec 2017"
+    :param date_str: "2017-12"
+    :return: new_date_str = "Dec 2017"
     """
-    date = datetime.strptime(date_str, '%m/%d/%Y')
-    new_date_str = datetime.strftime(date, '%d %b %Y')
+    date = datetime.strptime(date_str, '%Y-%m')
+    new_date_str = datetime.strftime(date, '%b %Y')
     return new_date_str
 
 
@@ -59,7 +59,7 @@ def find_min_distance_between_regex_matches(text, string2):
     :return: if no match is found, return -1. Otherwise returns the minimum distance
     """
     # Find all matches for the first regular expression
-    regex1 = re.compile(r'(<\w+>)*t(</\w+>)*[\s-]*test', re.IGNORECASE)
+    regex1 = re.compile(r'\b(<\w+>)*t(</\w+>)*[\s-]*tests?\b', re.IGNORECASE)
     regex2 = re.compile(rf'{regex_keyword(string2)}', re.IGNORECASE)
 
     matches1 = list(re.finditer(regex1, text))
@@ -107,15 +107,16 @@ def regex_keyword(string, regex=re.compile(r'\b[A-Za-z]\b', re.IGNORECASE)):
         last_index = index[1]
     new_string += string[last_index:]
     result_string = new_string.replace(" ", "[\\s]*")
+    result_string = '\\b' + result_string + '\\b'
 
-    # (<\w+>)*n(</\w+>)*[\s]*=[\s]3
+    # \b(<\w+>)*n(</\w+>)*[\s]*=[\s]*3\b
     return result_string
 
 
 def month_str_to_num(month):
     """
     :param month: the form as "Jan"
-    :return: string as "1"
+    :return: int
     """
     switcher = {
         "Jan": 1,
@@ -134,11 +135,68 @@ def month_str_to_num(month):
     return switcher[month]
 
 
+def month_num_to_str(month):
+    """
+    :param month: int
+    :return: string: the form as "Jan"
+    """
+    switcher = {
+        1: "Jan",
+        2: "Feb",
+        3: "Mar",
+        4: "Apr",
+        5: "Mai",
+        6: "Jun",
+        7: "Jul",
+        8: "Aug",
+        9: "Sep",
+        10: "Oct",
+        11: "Nov",
+        12: "Dec"
+    }
+    return switcher[month]
+
+
+def generate_period_tuple(start_time, end_time):
+    """
+    Generate a list with a time interval of two years based on start time and end time
+    :param start_time: "Dec 2014"
+    :param end_time: "Apr 2023"
+    :return: period: [('Jan 2014', 'Dec 2015'),
+                      ('Jan 2016', 'Dec 2017'),
+                      ('Jan 2018', 'Dec 2019'),
+                      ('Jan 2020', 'Dec 2021'),
+                      ('Jan 2022', 'Apr 2023')]
+    """
+    period = []
+    start_date = start_time
+    while True:
+        if start_time.split(" ")[0] == "Jan":
+            new_date = "Dec " + str(int(start_date.split(" ")[1]) + 1)
+            if datetime.strptime(new_date, "%b %Y") < datetime.strptime(end_time, "%b %Y"):
+                period.append((start_date, new_date))
+            else:
+                period.append((start_date, end_time))
+                break
+            start_date = start_date.split(" ")[0] + " " + str(int(start_date.split(" ")[1]) + 2)
+        else:
+            month_num = month_str_to_num(start_date.split(" ")[0]) - 1
+            month_str = month_num_to_str(month_num)
+            new_date = month_str + " " + str(int(start_date.split(" ")[1]) + 2)
+            if datetime.strptime(new_date, "%b %Y") < datetime.strptime(end_time, "%b %Y"):
+                period.append((start_date, new_date))
+            else:
+                period.append((start_date, end_time))
+                break
+            start_date = start_date.split(" ")[0] + " " + str(int(start_date.split(" ")[1]) + 2)
+    return period
+
+
 def generate_url(start_time, end_time, keyword):
     """
     Based on the user's input, generate the corresponding url
-    :param start_time: 01 Jan 2017
-    :param end_time: 31 Dec 2017
+    :param start_time: Jan 2017
+    :param end_time: Dec 2017
     :param keyword:
     :return: https://www.science.org/action/doSearch?field1=AllField&text1=t-test&field2
     =AllField&text2=p-value&field3=AllField&text3=&publication=&Ppub=&AfterMonth=1&AfterYear=2017&BeforeMonth=12
@@ -146,11 +204,11 @@ def generate_url(start_time, end_time, keyword):
     """
     start_str = start_time.split()
     end_str = end_time.split()
-    start_str[1] = month_str_to_num(start_str[1])
-    end_str[1] = month_str_to_num(end_str[1])
+    start_str[0] = month_str_to_num(start_str[0])
+    end_str[0] = month_str_to_num(end_str[0])
     keyword = keyword.replace('=', '%3D')
     keyword = keyword.replace(' ', '')
-    url = f'https://www.science.org/action/doSearch?field1=AllField&text1=t-test&field2=AllField&text2={keyword}&field3=AllField&text3=&publication=&Ppub=&AfterMonth={start_str[1]}&AfterYear={start_str[2]}&BeforeMonth={end_str[1]}&BeforeYear={end_str[2]}'
+    url = f'https://www.science.org/action/doSearch?field1=AllField&text1=t-test&field2=AllField&text2={keyword}&field3=AllField&text3=&publication=&Ppub=&AfterMonth={start_str[0]}&AfterYear={start_str[1]}&BeforeMonth={end_str[0]}&BeforeYear={end_str[1]}'
     return url
 
 
@@ -163,10 +221,7 @@ def get_last_related_article(url, html, keyword):
     :return: dict: the last related article and the page
     {'article': 'https://', 'page': '2'}
     """
-    max_page = int(get_last_page(html))
-    # article = ''
-    # result_page = ''
-    current_page = int(max_page/14) + 1
+    current_page = get_results_num(html) // 300
     # To mark special cases: the last article on the previous page is relevant, the
     # first article on the next page is not
     tag = 0
@@ -182,6 +237,9 @@ def get_last_related_article(url, html, keyword):
             article = binary_search_in_one_page(articles, keyword)
             break
         elif not first_is_related:
+            if current_page == 1:
+                print("no related article was found")
+                return {}
             current_page -= 1
             tag += 1
         elif last_is_related:
@@ -190,18 +248,19 @@ def get_last_related_article(url, html, keyword):
                 article = articles[-1]
                 break
             current_page += 1
+    print(f"the last related article for {url} was found in page {current_page}")
     return {'article': article, 'page': result_page}
 
 
-def get_last_page(html_url):
+def get_results_num(html):
     """
-    :param html_url: the url of the current page
-    :return: page: string
+    :param html: the source code of the current page
+    :return: num: how many results were found totally
     """
-    soup = BeautifulSoup(html_url, "html.parser")
-    li_list = soup.find_all(name='li', class_='page-item')
-    pages = li_list[-2].find_all('a')[0].text.strip()
-    return pages
+    soup = BeautifulSoup(html, "html.parser")
+    num_str = soup.find(name='span', class_='search-result__meta__item--count').text
+    num = int(num_str)
+    return num
 
 
 def is_related(url, keyword):
@@ -213,7 +272,8 @@ def is_related(url, keyword):
     """
     html = handle_http_requests2(url)
     distance = find_min_distance_between_regex_matches(html, keyword)
-    return True if distance < 1000 else False
+    print(f'the distance is {distance} in {url}')
+    return True if distance < 2000 else False
 
 
 def get_all_articles(html):
@@ -251,8 +311,8 @@ def binary_search_in_one_page(articles, keyword):
 def get_all_related_article(start_time, end_time, keyword, last_article):
     """
 
-    :param start_time: "01 Jan 2017"
-    :param end_time: "31 Dec 2017"
+    :param start_time: "Jan 2017"
+    :param end_time: "Dec 2017"
     :param keyword: "n = 3" the space is required between "="
     :param last_article: {"page": "3", "article": "https://"}
     :return: articles: {"Biomedicine":{"title": "Biomedicine", "url": "https://", "pdf": "https://", "authors": "...", "published time": "24 Jun 2017"}}
@@ -322,16 +382,16 @@ def get_only_related_articles_info(html, last_article):
 def generate_diagram(start_time, end_time, articles):
     """
 
-    :param start_time: 01 Jan 2017
-    :param end_time: 31 Dec 2017
+    :param start_time: Jan 2017
+    :param end_time: Dec 2017
     :param articles: {"Biomedicine":{"title": "Biomedicine", "url": "https://", "pdf": "https://", "authors": "...", "published time": "24 Jun 2017"}}
     :return: time_stamp: If the time difference is less than or equal to one year
                          --> {'Jan 2017': 12, 'Feb 2017': 4, ...}
                          else
                          ---> {'2010': 103, '2011': 194, ...}
     """
-    date1 = datetime.strptime(start_time, '%d %b %Y')
-    date2 = datetime.strptime(end_time, '%d %b %Y')
+    date1 = datetime.strptime(start_time, '%b %Y')
+    date2 = datetime.strptime(end_time, '%b %Y')
     delta = (date2 - date1).days
     time_stamp = {}
     if delta > 365:
