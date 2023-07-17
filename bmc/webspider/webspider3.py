@@ -14,13 +14,13 @@ def search_plos(classification, start_time, end_time, keyword):
                              'url': 'https://www.science.org/doi/10.1126/scisignal.aal1910',
                              'pdf': 'https://www.science.org/doi/pdf/10.1126/scisignal.aal1910?download=true',
                              'authors': 'by Fang-Ju Wu, Ting-Yu Lin, Li-Ying Sung, Wei-Fang Chang, Po-Chih Wu, Ching-Wei Luo',
-                             'published time': '02 May 2017'},
+                             'published_time': '02 May 2017'},
                          'Arabidopsis ATXR2 deposits H3K36me3 at the promoters of LBD genes to facilitate cellular dedifferentiation':
                             {'title': 'Arabidopsis ATXR2 deposits H3K36me3 at the promoters of LBD genes to facilitate cellular dedifferentiation',
                             'url': 'https://www.science.org/doi/10.1126/scisignal.aan0316',
                             'pdf': 'https://www.science.org/doi/pdf/10.1126/scisignal.aan0316?download=true',
                             'authors': 'by Kyounghee Lee, Ok-Sun Park, Pil Joon Seo',
-                            'published time': '28 Nov 2017'}, ...
+                            'published_time': '28 Nov 2017'}, ...
                          }
             }
     """

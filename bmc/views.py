@@ -35,6 +35,7 @@ def search(request, journal):
     classifications = ""
     if selected == 1:
         classifications = webspider.find_classification('https://www.biomedcentral.com/journals')
+        classifications.append("All")
         classifications = str(classifications)
     elif selected == 2:
         classifications = ["None"]
@@ -45,21 +46,20 @@ def search(request, journal):
     return render(request, 'bmc/searchMachine.html', {"journal": journal, "classification": json.dumps(classifications)})
 
 
-# Change the content of the second drop-down box after the first one has been selected
-def after_select(request):
-    selected = request.GET['value']
-    if selected == 'BMC-Journal':
-        classifications = webspider.find_classification('https://www.biomedcentral.com/journals')
-        classifications.append("All")
-        classifications = str(classifications)
-        return HttpResponse(classifications)
-    elif selected == 'Science-Translational-Medicine':
-        res = {"None": "None"}
-        return HttpResponse(json.dumps(res))
-    else:
-        classifications = webspider.find_classification("https://plos.org/")
-        classifications = str(classifications)
-        return HttpResponse(classifications)
+# # Change the content of the second drop-down box after the first one has been selected
+# def after_select(request):
+#     selected = request.GET['value']
+#     if selected == 'BMC-Journal':
+#         classifications = webspider.find_classification('https://www.biomedcentral.com/journals')
+#         classifications = str(classifications)
+#         return HttpResponse(classifications)
+#     elif selected == 'Science-Translational-Medicine':
+#         res = {"None": "None"}
+#         return HttpResponse(json.dumps(res))
+#     else:
+#         classifications = webspider.find_classification("https://plos.org/")
+#         classifications = str(classifications)
+#         return HttpResponse(classifications)
 
 
 # Call the webspider to search the result and transfer to the front-end
@@ -79,7 +79,7 @@ def result(request, journal):
         results = webspider3.search_plos(classification=find_selectedKat_num(str(selectedKat)), start_time=start, end_time=end, keyword=kriterien)
     elif selectedWeb == "Science-Translational-Medicine":
         results = webspider2.search_science(start, end, kriterien)
-    searchresult = {'results': results, 'resultnumber': len(results), 'kriterien': kriterien,
+    searchresult = {'results': results, 'resultnumber': len(results)+1, 'kriterien': kriterien,
                     'selectedKat': selectedKat}
     SaveItem.searchresult = results
     SaveItem.selectedWeb = selectedWeb
@@ -117,7 +117,7 @@ def save(request, journal):
             file.write("\n")
             file.write("Article" + str(article_num) + ":\n")
             file.write("Title: " + result['articles'][key]['title'] + "\n")
-            file.write("Published date: " + result['articles'][key]['published time'] + "\n")
+            file.write("Published date: " + result['articles'][key]['published_time'] + "\n")
             file.write("Author: " + result['articles'][key]['authors'] + "\n")
             file.write("Link: " + result['articles'][key]['url'] + "\n")
             file.write("PDF link: " + result['articles'][key]['pdf'] + "\n")

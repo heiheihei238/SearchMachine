@@ -119,13 +119,13 @@ def get_articles_by_date_range(start_time, end_time, keyword, classification):
          'url': 'https://www.science.org/doi/10.1126/scisignal.aal1910',
          'pdf': 'https://www.science.org/doi/pdf/10.1126/scisignal.aal1910?download=true',
          'authors': 'by Fang-Ju Wu, Ting-Yu Lin, Li-Ying Sung, Wei-Fang Chang, Po-Chih Wu, Ching-Wei Luo',
-         'published time': '02 May 2017'},
+         'published_time': '02 May 2017'},
      'Arabidopsis ATXR2 deposits H3K36me3 at the promoters of LBD genes to facilitate cellular dedifferentiation':
         {'title': 'Arabidopsis ATXR2 deposits H3K36me3 at the promoters of LBD genes to facilitate cellular dedifferentiation',
          'url': 'https://www.science.org/doi/10.1126/scisignal.aan0316',
          'pdf': 'https://www.science.org/doi/pdf/10.1126/scisignal.aan0316?download=true',
          'authors': 'by Kyounghee Lee, Ok-Sun Park, Pil Joon Seo',
-         'published time': '28 Nov 2017'}, ...
+         'published_time': '28 Nov 2017'}, ...
     }
     """
     results = {}
@@ -157,7 +157,7 @@ def get_articles_by_date_range(start_time, end_time, keyword, classification):
     x2 = get_all_articles(url2)
     merged_articles = {**x1, **x2}
     for i, t in merged_articles.items():
-        date = datetime.strptime(t["published time"], '%d %B %Y')
+        date = datetime.strptime(t["published_time"], '%d %B %Y')
         if start_date <= date <= end_date:
             results.update({i: t})
 
@@ -235,7 +235,7 @@ def binary_search_for_article(date, keyword, tag, classification):
     :param keyword: 'p-value'
     :return: article: {'page': 3, 'article': {'title': 'Debaryomyces hansenii supplementation in low fish meal diets
                        promotes growth, modulates microbiota and enhances intestinal condition in juvenile marine fish',
-                       'published time': '9 July 2023', 'url':
+                       'published_time': '9 July 2023', 'url':
                        'https://www.biomedcentral.com/search//jasbsci.biomedcentral.com/10.1186/s40104-023-00895-4',
                        'authors': 'Ignasi Sanahuja, Alberto Ruiz, Joana P. Firmino, Felipe E. Reyes-López,
                        Juan B. Ortiz-Delgado, Eva Vallejos-Vidal, Lluis Tort, Dariel Tovar-Ramírez, Isabel M. Cerezo,
@@ -358,13 +358,13 @@ def binary_search_for_article(date, keyword, tag, classification):
     articles = get_all_articles(url)
     if tag:  # get first article in date range
         for k, v in articles.items():
-            published_time_format = datetime.strptime(v['published time'], '%d %B %Y')
+            published_time_format = datetime.strptime(v['published_time'], '%d %B %Y')
             if published_time_format <= d:
                 article = v
                 break
     else:
         for k, v in reversed(list(articles.items())):
-            published_time_format = datetime.strptime(v['published time'], '%d %B %Y')
+            published_time_format = datetime.strptime(v['published_time'], '%d %B %Y')
             if published_time_format >= d:
                 article = v
                 break
@@ -382,7 +382,7 @@ def get_all_articles(url):
     get the article title, Publish time, authors, links within a page
     :param url: the link of pagination
            for example: https://biotechnologyforbiofuels.biomedcentral.com/articles?tab=keyword&searchType=journalSearch&sort=Relevance&query=t-test&page=2
-    :return: a dictionary results. results[titles[i]] = {'title': titles[i], 'published time': times[i], 'url': links[i], 'authors': authors[i]}
+    :return: a dictionary results. results[titles[i]] = {'title': titles[i], 'published_time': times[i], 'url': links[i], 'authors': authors[i]}
     """
     results = {}
     content = handle_http_requests(url)
@@ -408,7 +408,7 @@ def get_all_articles(url):
         times.append(convert_date_format1(date, '%d %B %Y'))
     # len(authors) = len(times) = len(links) = len(titles) = 50
     for i in range(len(authors)):
-        results[titles[i]] = {'title': titles[i], 'published time': times[i], 'url': links[i], 'pdf': pdfs[i],
+        results[titles[i]] = {'title': titles[i], 'published_time': times[i], 'url': links[i], 'pdf': pdfs[i],
                               'authors': authors[i]}
     return results
 
@@ -418,7 +418,7 @@ def generate_diagram(start_time, end_time, articles):
 
     :param start_time: 01 January 2010
     :param end_time: 01 December 2012
-    :param articles: {"Biomedicine":{"title": "Biomedicine", "url": "https://", "pdf": "https://", "authors": "...", "published time": "24 Jun 2017"}}
+    :param articles: {"Biomedicine":{"title": "Biomedicine", "url": "https://", "pdf": "https://", "authors": "...", "published_time": "24 Jun 2017"}}
     :return: time_stamp: If the time difference is less than or equal to one year
                          --> {'January 2010': 12, 'February 2010': 4, ...}
                          else
@@ -430,7 +430,7 @@ def generate_diagram(start_time, end_time, articles):
     time_stamp = {}
     if delta > 365:
         for i, t in articles.items():
-            date = datetime.strptime(t["published time"], '%d %B %Y')
+            date = datetime.strptime(t["published_time"], '%d %B %Y')
             year = str(date.year)
             if year in time_stamp:
                 time_stamp[year] += 1
@@ -438,7 +438,7 @@ def generate_diagram(start_time, end_time, articles):
                 time_stamp[year] = 1
     else:
         for i, t in articles.items():
-            date = datetime.strptime(t["published time"], '%d %B %Y')
+            date = datetime.strptime(t["published_time"], '%d %B %Y')
             year_month = str(date.year) + '-' + str(date.month).zfill(2)
             if year_month in time_stamp:
                 time_stamp[year_month] += 1

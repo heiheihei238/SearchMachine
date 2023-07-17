@@ -11,12 +11,16 @@ def handle_http_requests(url):
     :param url: string
     :return: response.text
     """
-    response = requests.get(url)
-    content = ''
-    if response.status_code == 200:
-        content = response.text
-    else:
-        print("Failed to fetch the URL " + url + ", status code:" + str(response.status_code))
+    try:
+        response = requests.get(url)
+        content = ''
+        if response.status_code == 200:
+            content = response.text
+        else:
+            print("Failed to fetch the URL " + url + ", status code:" + str(response.status_code))
+    except requests.exceptions.RequestException as e:
+        print(f'an error occurred when visiting {url}, the error is {e}')
+        content = ''
     return content
 
 
@@ -72,7 +76,7 @@ def get_url_without_property(url):
 
 def get_all_articles(url):
     """
-    get the article title, Publish time, authors, links within a page
+    get the article title, Published time, authors, URL and URL of pdf within a page
     :param url: the link of pagination
            for example: https://biotechnologyforbiofuels.biomedcentral.com/articles?tab=keyword&searchType=journalSearch&sort=Relevance&query=t-test&page=2
     :return: a dictionary results. results[titles[i]] = {'title': titles[i], 'published_time': times[i], 'url': links[i], 'authors': authors[i]}
@@ -347,9 +351,9 @@ def binary_search_for_article(date, keyword, tag, url='https://www.biomedcentral
 
     # output in console
     if tag:
-        print(f"the first article published on or after {date} for url '{url}' is found on page {page}")
+        print(f"the first article published on or after {date} for url '{url}' is found on page {current_page}")
     else:
-        print(f"the last article published on or before {date} for url '{url}' is found on page {page}")
+        print(f"the last article published on or before {date} for url '{url}' is found on page {current_page}")
     return {'page': current_page, 'article': article}
 
 
@@ -376,6 +380,8 @@ def is_related(url, keyword):
     :return: True or False
     """
     html = handle_http_requests(url)
+    if html == '':
+        return False
     distance = find_min_distance_between_regex_matches(html, keyword)
     print(f'the distance is {distance} in {url}')
     return True if distance < 2000 else False
@@ -446,10 +452,13 @@ def regex_keyword(string, regex=re.compile(r'\b[A-Za-z]\b', re.IGNORECASE)):
 def generate_diagram(start_time, end_time, articles):
     """
 
-    :param start_time: 01 January 2010 :param end_time: 01 December 2012 :param articles: {"Biomedicine":{"title":
-    "Biomedicine", "url": "https://", "pdf": "https://", "authors": "...", "published time": "24 Jun 2017"}} :return:
-    time_stamp: If the time difference is less than or equal to one year --> {'January 2010': 12, 'February 2010': 4,
-    ...} else ---> {'2010': 103, '2011': 194, ...}
+    :param start_time: 01 January 2010
+    :param end_time: 01 December 2012
+    :param articles: {"Biomedicine":{"title": "Biomedicine", "url": "https://", "pdf": "https://", "authors": "...", "published time": "24 Jun 2017"}}
+    :return: time_stamp: If the time difference is less than or equal to one year
+                         --> {'January 2010': 12, 'February 2010': 4, ...}
+                         else
+                         ---> {'2010': 103, '2011': 194, ...}
     """
     date1 = datetime.strptime(start_time, '%d %B %Y')
     date2 = datetime.strptime(end_time, '%d %B %Y')
