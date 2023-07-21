@@ -95,6 +95,7 @@
             <div>
                 <button class="btn btn-primary select-all" style="margin-right: 8px">Alle auswählen</button>
                 <button class="btn btn-primary unselect-all" style="margin-right: 8px">Alle abwählen</button>
+                <button class="btn btn-primary random-select" style="margin-right: 8px">10 zufällig ausgewählte</button>
             </div>
         </div>
 
@@ -305,7 +306,29 @@
         $('.unselect-all').click(function() {
             $('.checkbox').prop('checked', false);
         });
+
+        $('.random-select').click(function() {
+            const numToSelect = 10; // 要选中的复选框数量
+            const checkboxes = $('.checkbox')
+
+            // 如果要选中的数量大于等于复选框总数，就全选所有复选框
+            if (numToSelect >= checkboxes.length) {
+                checkboxes.forEach((checkbox) => (checkbox.checked = true));
+            }
+            else {
+                // 否则，随机选中 numToSelect 个复选框
+                const selectedIndexes = [];
+                while (selectedIndexes.length < numToSelect) {
+                    const randomIndex = Math.floor(Math.random() * checkboxes.length);
+                    if (!selectedIndexes.includes(randomIndex)) {
+                        selectedIndexes.push(randomIndex);
+                        checkboxes[randomIndex].checked = true;
+                    }
+                }
+            }
+        })
     });
+
 </script>
 <script>
     // 页面加载完成时执行

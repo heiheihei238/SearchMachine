@@ -402,10 +402,12 @@ def get_all_articles(url):
         pdfs.append("https://journals.plos.org/" + part.attrs['href'].replace("article", "article/file") + "&type=printable")
         titles.append(part.get_text())
     for n in range(0, 15):
-        date = soup.find(attrs={"id": "article-result-" + str(n) + "-date"}).get_text(strip=True).replace("published ",
-                                                                                                          '').replace(
-            ' ', '-')
-        times.append(convert_date_format1(date, '%d %B %Y'))
+        date1 = soup.find(attrs={"id": "article-result-" + str(n) + "-date"})
+        if date1 is None:
+            break
+        else:
+            date2 = date1.get_text(strip=True).replace("published ", '').replace(' ', '-')
+            times.append(convert_date_format1(date2, '%d %B %Y'))
     # len(authors) = len(times) = len(links) = len(titles) = 50
     for i in range(len(authors)):
         results[titles[i]] = {'title': titles[i], 'published_time': times[i], 'url': links[i], 'pdf': pdfs[i],

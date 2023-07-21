@@ -1,7 +1,8 @@
+import time
 from bmc.webspider import tool3
 
 
-def search_plos(classification, start_time, end_time, keyword):
+def search_plos(classification=0, start_time='01/01/2022', end_time=time.strftime('%m/%d/%Y', time.localtime()), keyword=''):
     """
     :param classification:
     :param start_time: datetime.date

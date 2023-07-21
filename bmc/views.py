@@ -42,6 +42,7 @@ def search(request, journal):
     else:
         classifications = webspider.find_classification("https://plos.org/")
         SaveItem.classification = classifications
+        classifications.append("All")
         classifications = str(classifications)
     return render(request, 'bmc/searchMachine.html', {"journal": journal, "classification": json.dumps(classifications)})
 
@@ -79,7 +80,7 @@ def result(request, journal):
         results = webspider3.search_plos(classification=find_selectedKat_num(str(selectedKat)), start_time=start, end_time=end, keyword=kriterien)
     elif selectedWeb == "Science-Translational-Medicine":
         results = webspider2.search_science(start, end, kriterien)
-    searchresult = {'results': results, 'resultnumber': len(results)+1, 'kriterien': kriterien,
+    searchresult = {'results': results, 'resultnumber': len(results['articles']), 'kriterien': kriterien,
                     'selectedKat': selectedKat}
     SaveItem.searchresult = results
     SaveItem.selectedWeb = selectedWeb
