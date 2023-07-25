@@ -108,7 +108,10 @@ def save(request, journal):
             "start "
             "time: " + SaveItem.start.__str__(), "end time: " + SaveItem.end.__str__()]
     result = SaveItem.searchresult
-    filename = "savedResult.txt"
+    n = 1
+    while os.path.exists("savedResult " + str(n) + ".txt"):
+        n += 1
+    filename = "savedResult " + str(n) + ".txt"
     with open(filename, "w", encoding="utf-8") as file:
         for line in data:
             file.write(line + "\n")

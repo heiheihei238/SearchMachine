@@ -17,7 +17,7 @@ def find_classification(url):
     soup = BeautifulSoup(content, "html.parser")
 
     if url == 'https://www.biomedcentral.com/journals':
-        classification_name = [name.string.replace(' ', '_') for name in soup.find_all('h3')]
+        classification_name = [name.string.replace(' ', '-') for name in soup.find_all('h3')]
 
         classification_name.pop()
         return classification_name

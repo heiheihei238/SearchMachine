@@ -49,12 +49,13 @@
                 Wählen Sie den Zeitraum der Veröffentlichung
             </div>
 
+
             <!-- The datepicker section -->
-            <div style="display: flex; flex-direction: column; width: 60%; align-items: center; justify-content: space-between">
+            <div class="input-group input-daterange" style="display: flex; flex-direction: column; width: 60%; align-items: center; justify-content: space-between">
                 <div class="row form-group" style="width: 90%">
                     <div>Startdatum: </div>
                     <div class="input-group date" id="datepicker1">
-                        <input type="text" class="form-control" id="start">
+                        <input type="text" class="form-control" id="start" readonly>
                         <span class="input-group-append">
                             <span class="input-group-text bg-white d-block">
                                 <i class="fa fa-calendar"></i>
@@ -64,8 +65,8 @@
                 </div>
                 <div class="row form-group" style="width: 90%; margin-top: 2%">
                     <div>Enddatum: </div>
-                    <div class="input-group date" id="datepicker2">
-                        <input type="text" class="form-control" id="end">
+                    <div class="input-group date"id="datepicker2">
+                        <input type="text" class="form-control" id="end" readonly>
                         <span class="input-group-append">
                             <span class="input-group-text bg-white d-block">
                                 <i class="fa fa-calendar"></i>
@@ -161,10 +162,26 @@
 <!-- Control the datepicker function -->
 <script type="text/javascript">
     $(function() {
-        $('#datepicker1').datepicker();
+        $('#datepicker1').datepicker({
+            autoclose: true,
+        });
     });
     $(function() {
-        $('#datepicker2').datepicker();
+        $('#datepicker2').datepicker({
+            autoclose: true,
+        });
+    });
+    $('#datepicker1').change(function() {
+        // 获取第一个日期选择器中的日期
+        var startDate = $('#datepicker1').datepicker('getDate');
+
+        // 设置第二个日期选择器的起始日期为第一个日期选择器的日期
+        $('#datepicker2').datepicker('setStartDate', startDate);
+        // 如果第二个日期选择器中的日期早于第一个日期，则将其重置为空
+        var endDate = new Date($('#datepicker2').val());
+        if (endDate < startDate) {
+            $('#datepicker2').datepicker('setDate', null);
+        }
     });
 </script>
 
