@@ -236,3 +236,21 @@ body::after{
 .content-fade-out {
   opacity: 0;
 }
+
+/* 背景遮罩层样式 */
+.modal-backdrop {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: -1; /* 更高的 z-index 值确保遮罩层覆盖模态框 */
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 透明度可以根据需要调整 */
+}
+
+/* 让模态框居中显示 */
+.modal-dialog-centered {
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 1rem); /* 这里的值请根据实际情况调整 */
+}
