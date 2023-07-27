@@ -228,6 +228,7 @@
     $(document).ready(function (){
         $("#search").on("click", function (){
             $("#selectButton1").removeAttr("disabled");
+            $("#title").innerText = "... Ergebnis(se) für ... in ..."
             let selectedWeb = $('select#selectButton1 option:selected').text();
             let selectedKat = $('select#selectButton2 option:selected').text();
             let kriterien = document.getElementById('keriterien').value;
