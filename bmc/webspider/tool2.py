@@ -208,7 +208,7 @@ def generate_url(start_time, end_time, keyword):
     end_str[0] = month_str_to_num(end_str[0])
     keyword = keyword.replace('=', '%3D')
     keyword = keyword.replace(' ', '')
-    url = f'https://www.science.org/action/doSearch?field1=AllField&text1=t-test&field2=AllField&text2={keyword}&field3=AllField&text3=&publication=&Ppub=&AfterMonth={start_str[0]}&AfterYear={start_str[1]}&BeforeMonth={end_str[0]}&BeforeYear={end_str[1]}'
+    url = f'https://www.science.org/action/doSearch?field1=AllField&text1=t-test+{keyword}&publication=&Ppub=&AfterMonth={start_str[0]}&AfterYear={start_str[1]}&BeforeMonth={end_str[0]}&BeforeYear={end_str[1]}'
     return url
 
 

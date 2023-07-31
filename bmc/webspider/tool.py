@@ -365,10 +365,16 @@ def get_related_articles(articles, keyword):
     :param keyword: user defined keyword
     :return: results: dict
     """
+    number = len(articles)
+    current_number = 0
     results = {}
+    print(f"the total number of to be tested article is {number}")
     for i, t in articles.items():
         if is_related(t['url'], keyword):
             results.update({i: t})
+        current_number += 1
+        if number % 100 == 0:
+            print(f'the current process is {current_number}/{number}')
     return results
 
 
