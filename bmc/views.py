@@ -67,7 +67,8 @@ def search(request, journal):
 def result(request, journal):
     selectedWeb = request.GET['selectedWeb']
     selectedKat = request.GET['selectedKat']
-    kriterien = request.GET['kriterien']
+    kriterien_min = request.GET['kriterien_min']
+    kriterien_max = request.GET['kriterien_max']
     start = request.GET['start']
     end = request.GET['end']
     results = {}
@@ -77,7 +78,7 @@ def result(request, journal):
         else:
             results = webspider.search_bmc(classification=selectedKat, start_time=start, end_time=end, keyword=kriterien)
     elif selectedWeb == "PLOS":
-        results = webspider3.search_plos(classification=find_selectedKat_num(str(selectedKat)), start_time=start, end_time=end, keyword=kriterien)
+        results = webspider3.search_plos(classification=find_selectedKat_num(str(selectedKat)), start_time=start, end_time=end, keyword='n')
     elif selectedWeb == "Science-Translational-Medicine":
         results = webspider2.search_science(start, end, kriterien)
     searchresult = {'results': results, 'resultnumber': len(results['articles']), 'kriterien': kriterien,
